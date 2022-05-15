@@ -1,7 +1,5 @@
 import audible
-
-FILENAME = 'auth/audible_auth.txt'
-AUTH = audible.Authenticator.from_file(FILENAME)
+import csv
 
 def convertTime(_runtime):
     try:
@@ -10,7 +8,7 @@ def convertTime(_runtime):
         _runtime_hm = hours + ':' + minutes.zfill(2)
         return _runtime, _runtime_hm
     except:
-        return 'N/A', 'N/A'
+        return '0', '0:00'
 
 def getContributors(_contributors):
     try:
@@ -21,28 +19,35 @@ def getContributors(_contributors):
     except:
         return 'N/A'
 
-with audible.Client(auth=AUTH) as client:
-    library = client.get(
-        "1.0/library",
-        num_results=1000,
-        response_groups="product_desc, product_attrs, contributors",
-        sort_by="-PurchaseDate"
-    )
+def getLibrary():
+    AUTH = audible.Authenticator.from_file('auth/audible_auth.txt')
+    with audible.Client(auth=AUTH) as client:
+        library = client.get(
+            "1.0/library",
+            num_results=1000,
+            response_groups="product_desc, product_attrs, contributors",
+            sort_by="-PurchaseDate"
+        )
+        book_list = []
+        for book in library["items"]:
+            author_list = book['authors']
+            authors = getContributors(author_list)
+            narrator_list = book['narrators']
+            narrators = getContributors(narrator_list)
+            title = book['title']
+            purchased = book['purchase_date']
+            released = book['release_date']
+            runtime_mmm, runtime_hm = convertTime(book['runtime_length_min'])
+            book_list.append([authors,title,narrators,runtime_mmm,runtime_hm,released,purchased])
+    book_list.sort()
+    return book_list
 
-    book_list = []
+def writeLibrary(_library):
+    fields = ['authors','title','narrators','runtime_mmm','runtime_hm','released','purchased']
+    with open('data/library.csv', 'w', newline='', encoding='UTF8') as output:
+        write = csv.writer(output)
+        write.writerow(fields)
+        write.writerows(_library)
 
-    for book in library["items"]:
-        author_list = book['authors']
-        authors = getContributors(author_list)
-        narrator_list = book['narrators']
-        narrators = getContributors(narrator_list)
-        title = book['title']
-        purchased = book['purchase_date']
-        released = book['release_date']
-        runtime_mmm, runtime_hm = convertTime(book['runtime_length_min'])
-        book_list.append([authors,title,narrators,runtime_mmm,runtime_hm,released,purchased])
-
-book_list.sort()
-book_list.insert(0,['authors','title','narrators','runtime_mmm','runtime_hm','released','purchased'])
-for book in book_list:
-    print(book)
+library = getLibrary()
+writeLibrary(library)
