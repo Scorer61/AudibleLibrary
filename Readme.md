@@ -6,6 +6,6 @@ Current package at the time this project was created is audible 0.8.1
 
 pip install audible
 
-Run audibleAuthenticate.py first to get authentication key.
+Run audibleAuthenticate.py first to get and store authentication key. It does not need to be run again unless the key changes.
 
 This is a work in progress.
