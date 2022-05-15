@@ -26,7 +26,7 @@ def getLibrary():
             "1.0/library",
             num_results=1000,
             response_groups="product_desc, product_attrs, contributors",
-            sort_by="-PurchaseDate"
+            sort_by="Author"
         )
         book_list = []
         for book in library["items"]:
@@ -39,7 +39,6 @@ def getLibrary():
             released = book['release_date']
             runtime_mmm, runtime_hm = convertTime(book['runtime_length_min'])
             book_list.append([authors,title,narrators,runtime_mmm,runtime_hm,released,purchased])
-    book_list.sort()
     return book_list
 
 def writeLibrary(_library):
