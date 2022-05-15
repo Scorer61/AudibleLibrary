@@ -1,6 +1,6 @@
 # created by virtualenv automatically
 .idea/
-auth/
 Lib/
 Scripts/
+audible_auth.txt
 pyvenv.cfg
