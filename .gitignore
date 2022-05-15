@@ -3,5 +3,6 @@
 Lib/
 Scripts/
 audible_auth.txt
+*.csv
 pyvenv.cfg
 test.py
