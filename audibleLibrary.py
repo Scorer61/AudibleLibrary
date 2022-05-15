@@ -7,15 +7,19 @@ def convertTime(_runtime):
     try:
         hours = str(int(_runtime / 60))
         minutes = str(_runtime % 60)
-        return hours + ':' + minutes.zfill(2)
+        _runtime_hm = hours + ':' + minutes.zfill(2)
+        return _runtime, _runtime_hm
+    except:
+        return 'N/A', 'N/A'
+
+def getContributors(_contributors):
+    try:
+        _contributor_list = []
+        for _contributor in _contributors:
+            _contributor_list.append(_contributor['name'])
+        return ';'.join(_contributor_list)
     except:
         return 'N/A'
-
-def getAuthors(_authors):
-    _author_list = []
-    for _author in _authors:
-        _author_list.append(_author['name'])
-    return ';'.join(_author_list)
 
 with audible.Client(auth=AUTH) as client:
     library = client.get(
@@ -29,15 +33,16 @@ with audible.Client(auth=AUTH) as client:
 
     for book in library["items"]:
         author_list = book['authors']
-        authors = getAuthors(author_list)
+        authors = getContributors(author_list)
+        narrator_list = book['narrators']
+        narrators = getContributors(narrator_list)
         title = book['title']
         purchased = book['purchase_date']
         released = book['release_date']
-        runtime_mmm = book['runtime_length_min']
-        runtime_hm = convertTime(runtime_mmm)
-        book_list.append([authors,title,runtime_mmm,runtime_hm,released,purchased])
+        runtime_mmm, runtime_hm = convertTime(book['runtime_length_min'])
+        book_list.append([authors,title,narrators,runtime_mmm,runtime_hm,released,purchased])
 
 book_list.sort()
-book_list.insert(0,['authors','title','runtime_mmm','runtime_hm','released','purchased'])
+book_list.insert(0,['authors','title','narrators','runtime_mmm','runtime_hm','released','purchased'])
 for book in book_list:
     print(book)
