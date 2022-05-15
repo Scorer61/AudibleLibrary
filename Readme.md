@@ -1,6 +1,6 @@
 Code to retrieve list of books from personal Audible library.
 
-Project depends on the audible package.
+Project depends on the audible package created by mkb79.
 
 Current package at the time this project was created is audible 0.8.1
 
